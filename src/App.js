@@ -1,23 +1,57 @@
-import logo from './logo.svg';
 import './App.css';
+import moneyPyramid from "./data/moneyPyramid";
+import data from "./data/data";
+
+import React, {useState, useEffect} from 'react'
+import Trivial from './components/Trivial';
+import Timer from './components/Timer';
+import Start from "./components/Start";
+
+
 
 function App() {
+  const [username, setUsername] = useState(null);
+  const [questionNumber, setQuestionNumber] = useState(1)
+  const [stop, setStop] = useState(false);
+  const [earned, setEarned] = useState(" 0 ₦");
+
+
+
+   useEffect(()=>{
+     questionNumber > 1 && setEarned(moneyPyramid.find(m=> m.id === questionNumber - 1).amount)
+   }, [questionNumber])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {username ? (
+        <>
+            <div className="main">
+         {stop ? <h1 className="endText"> You Won :{earned}</h1> : (
+           <>
+            <div className="top">
+            <div className="timer"> <Timer setStop={setStop} questionNumber={questionNumber}/> </div>
+         </div>
+         <div className="bottom"> 
+             <Trivial data={data}
+              setStop={setStop}
+               setQuestionNumber={setQuestionNumber}
+               questionNumber={questionNumber}
+               /> 
+         </div>
+         </>
+         )}
+      </div>
+      <div className="pyramid">
+          <ul className="moneyList">
+            {moneyPyramid.map((m)=>(
+               <li className={questionNumber === m.id ? "moneyListItem active" : "moneyListItem"} key={m.id}>
+               <span className="moneyListItemNumber">{m.id}</span>
+               <span className="moneyListItemAmount">{m.amount}</span>
+           </li>
+            ))}
+          </ul>
+      </div>
+        </>
+      ) : <Start setUsername={setUsername} />}
     </div>
   );
 }
